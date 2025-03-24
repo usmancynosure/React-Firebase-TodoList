@@ -22,56 +22,47 @@ function App() {
       setTodos(
         snapshot.docs.map((doc) => ({ id: doc.id, todo: doc.data().todo }))
       );
+    }, (error) => {
+      console.error("Firestore Error:", error);
     });
+
     return () => unsubscribe();
   }, []);
 
-  const setEdit = (index) => {
-    setInput(todos[index].todo);
-    setEditIndex(index);
-  };
-
-  const addTodo = async () => {
+  const handleAddOrUpdate = async () => {
     try {
-      if (input.trim() !== "") {
-        // setTodos([...todos, { id: new Date(), todo: input }]);
+      if (input.trim() === "") return;
+      if (editIndex === -1) {
         await addDoc(collection(db, "todos"), { todo: input });
-        setInput("");
-      }
-    } catch (error) {
-      console.error(error.message);
-    }
-  };
-
-  const updateTodo = async () => {
-    try {
-      if (input.trim() !== "") {
-        // const updatedTodos = [...todos];
-        // updatedTodos[editIndex].todo = input;
-        // setTodos(updatedTodos);
+      } else {
         const todoDocRef = doc(db, "todos", todos[editIndex].id);
         await updateDoc(todoDocRef, { todo: input });
         setEditIndex(-1);
-        setInput("");
       }
+      setInput("");
     } catch (error) {
-      console.error(error.message);
+      console.error("Error handling todo:", error.message);
     }
   };
 
-  const removeTodo = async (id) => {
-    // let filteredTodos = todos.filter((todo) => todo.id !== id);
-    // setTodos(filteredTodos);
+  const handleEdit = (index) => {
+    if (index >= 0 && index < todos.length) {
+      setInput(todos[index].todo);
+      setEditIndex(index);
+    }
+  };
+
+  const handleDelete = async (id) => {
     try {
       await deleteDoc(doc(db, "todos", id));
     } catch (error) {
-      console.error(error.message);
+      console.error("Error deleting todo:", error.message);
     }
   };
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center gap-4 p-4 bg-custom-background bg-center bg-cover">
-      <div className="bg-gray-100 p-6 rounded shadow-md w-full max-w-screen-lg lg:w-1/4">
+      <div className="bg-gray-100 p-6 rounded shadow-md w-full max-w-md">
         <h1 className="text-3xl font-bold text-center mb-4">ToDo App</h1>
         <div className="flex">
           <input
@@ -83,15 +74,14 @@ function App() {
           />
           <button
             className="bg-gradient-to-r from-blue-400 to-blue-600 hover:from-blue-500 hover:to-blue-700 text-white py-2 px-4 rounded"
-            onClick={editIndex === -1 ? addTodo : updateTodo}
+            onClick={handleAddOrUpdate}
           >
             {editIndex === -1 ? <FaPlus /> : <FaCheck />}
           </button>
         </div>
       </div>
-
       {todos.length > 0 && (
-        <TodoList todos={todos} setEdit={setEdit} removeTodo={removeTodo} />
+        <TodoList todos={todos} onEdit={handleEdit} onDelete={handleDelete} />
       )}
     </div>
   );

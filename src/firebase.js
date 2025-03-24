@@ -2,16 +2,19 @@
 import { initializeApp } from "firebase/app";
 import { getFirestore } from "firebase/firestore";
 
-
+// Your web app's Firebase configuration
 const firebaseConfig = {
-    apiKey: "YOUR_API_KEY",
-    authDomain: "YOUR_AUTH_DOMAIN",
-    projectId: "YOUR_PROJECT_ID",
-    storageBucket: "YOUR_STORAGE_BUCKET",
-    messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-    appId: "YOUR_APP_ID",
+  apiKey: "AIzaSyDS3Y49XvGTyIHTCiC_ru69VnFhiqMCPuQ",
+  authDomain: "react-todo-app-5f37b.firebaseapp.com",
+  projectId: "react-todo-app-5f37b",
+  storageBucket: "react-todo-app-5f37b.appspot.com",
+  messagingSenderId: "901010635656",
+  appId: "1:901010635656:web:90de35a93fcfeeffa8583d",
+  measurementId: "G-TTTWQC20FQ"
 };
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
-export const db = getFirestore(app);
+const db = getFirestore(app);
+
+export { db };
